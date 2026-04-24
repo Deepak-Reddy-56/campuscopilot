@@ -30,7 +30,6 @@ from .algorithms import (
 from .analysis import (
     department_student_count,
     department_utilization,
-    fee_defaulters,
     fees_distribution,
     monthly_budget_trend,
     total_fees_collected,
@@ -80,8 +79,20 @@ def build_handlers(
     finance_df,
     schedule_df,
 ):
+    # Get a list of all unique departments from our data to use for filtering.
+    all_depts = sorted(list(set(s.department for s in students) | 
+                           set(e.department for e in events)))
+
+    def _get_target_dept(query: str) -> str | None:
+        """Helper to find if a department was mentioned as a distinct word in the query."""
+        query_words = query.upper().split()
+        for dept in all_depts:
+            if dept in query_words:
+                return dept
+        return None
+
     # --------- events ---------
-    def show_events() -> str:
+    def show_events(query: str = "") -> str:
         lines = [_banner("UPCOMING EVENTS")]
         # Sort events by date, earliest first.
         for ev in sorted(events, key=lambda e: (e.date, e.start_time)):
@@ -92,7 +103,7 @@ def build_handlers(
         return "\n".join(lines)
 
     # --------- finance ---------
-    def show_finance() -> str:
+    def show_finance(query: str = "") -> str:
         util = department_utilization(finance_df)
         collected = total_fees_collected(students)
         pending   = total_fees_pending(students)
@@ -117,44 +128,67 @@ def build_handlers(
         return "\n".join(lines)
 
     # --------- schedule ---------
-    def show_schedule() -> str:
-        lines = [_banner("EXAM SCHEDULE")]
-        for _, row in schedule_df.sort_values("Date").iterrows():
+    def show_schedule(query: str = "") -> str:
+        target_dept = _get_target_dept(query)
+        df = schedule_df[schedule_df["Department"] == target_dept] if target_dept else schedule_df
+        
+        title = f"EXAM SCHEDULE ({target_dept})" if target_dept else "EXAM SCHEDULE"
+        lines = [_banner(title)]
+        
+        for _, row in df.sort_values("Date").iterrows():
             lines.append(
                 f"  {row['Date'].date()}  {row['StartTime']}-{row['EndTime']}  "
                 f"[{row['Department']:>4}]  {row['Subject']:25s}  Room: {row['Room']}"
             )
+            
+        if df.empty and target_dept:
+            lines.append(f"  No exams found for {target_dept}.")
+            
+        return "\n".join(lines)
+
+    # --------- requirements ---------
+    def show_requirements(query: str = "") -> str:
+        query_lower = query.lower()
+        # Look for specific event names in the query string
+        matched = [e for e in events if e.name.lower() in query_lower]
+
+        if not matched:
+            return (_banner("REQUIREMENTS") + 
+                    "\n  Please specify which event you're asking about.\n"
+                    "  Example: 'requirements for AI Workshop'")
+
+        lines = [_banner("EVENT REQUIREMENTS")]
+        for ev in matched:
+            lines.append(f"  {ev.name}:\n    -> {ev.requirements}")
         return "\n".join(lines)
 
     # --------- students ---------
-    def show_students() -> str:
-        counts = department_student_count(students)
-        defaulters = fee_defaulters(students)
+    def show_students(query: str = "") -> str:
+        target_dept = _get_target_dept(query)
+        filtered_students = [s for s in students if s.department == target_dept] if target_dept else students
+        
+        counts = department_student_count(filtered_students)
 
-        lines = [_banner("STUDENT OVERVIEW")]
-        lines.append(f"  Total students: {len(students)}")
-        lines.append("\n  Students per department:")
-        for dept, n in sorted(counts.items()):
-            lines.append(f"    {dept:>4}: {n}")
-
-        if defaulters:
-            lines.append(f"\n  Fee defaulters ({len(defaulters)}):")
-            for s in defaulters:
-                lines.append(f"    {s.student_id}  {s.name:20s}  "
-                             f"due = {_format_currency(s.fees_due)}")
-        else:
-            lines.append("\n  No fee defaulters. Great!")
+        title = f"STUDENT OVERVIEW ({target_dept})" if target_dept else "STUDENT OVERVIEW"
+        lines = [_banner(title)]
+        lines.append(f"  Total students: {len(filtered_students)}")
+        
+        if not target_dept:
+            lines.append("\n  Students per department:")
+            for dept, n in sorted(counts.items()):
+                lines.append(f"    {dept:>4}: {n}")
+                
         return "\n".join(lines)
 
     # --------- map ---------
-    def show_map() -> str:
+    def show_map(query: str = "") -> str:
         path = generate_campus_map(events)
         return (f"{_banner('CAMPUS MAP GENERATED')}\n"
                 f"  Interactive map saved to: {path}\n"
                 f"  Open it in your browser to explore.")
 
     # --------- optimize: THE DSA SHOWCASE ---------
-    def show_optimize() -> str:
+    def show_optimize(query: str = "") -> str:
         lines = [_banner("ALGORITHMIC RECOMMENDATIONS")]
 
         # --- Greedy: Activity Selection ---
@@ -197,31 +231,32 @@ def build_handlers(
         return "\n".join(lines)
 
     # --------- help ---------
-    def show_help() -> str:
+    def show_help(query: str = "") -> str:
         return (_banner("HELP") +
                 "\n  Ask me things like:\n"
                 "    'show events'            -> list all events\n"
                 "    'what are the fees?'     -> financial overview + charts\n"
                 "    'exam schedule'          -> exam timetable\n"
-                "    'show students'          -> enrollment + defaulters\n"
+                "    'show students'          -> enrollment stats\n"
                 "    'campus map'             -> interactive Folium map\n"
                 "    'optimize events'        -> run DSA recommendations\n"
                 "    'help'                   -> this menu\n"
                 "    'quit'                   -> exit\n"
                 "\n  Typos are fine -- fuzzy matching handles them.")
 
-    def do_quit() -> str:
+    def do_quit(query: str = "") -> str:
         return "__QUIT__"   # sentinel the loop looks for
 
     return {
-        "events":   show_events,
-        "finance":  show_finance,
-        "schedule": show_schedule,
-        "students": show_students,
-        "map":      show_map,
-        "optimize": show_optimize,
-        "help":     show_help,
-        "quit":     do_quit,
+        "events":       show_events,
+        "requirements": show_requirements,
+        "finance":      show_finance,
+        "schedule":     show_schedule,
+        "students":     show_students,
+        "map":          show_map,
+        "optimize":     show_optimize,
+        "help":         show_help,
+        "quit":         do_quit,
     }
 
 

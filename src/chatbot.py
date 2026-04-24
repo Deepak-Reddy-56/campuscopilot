@@ -37,7 +37,8 @@ INTENT_KEYWORDS: Dict[str, Set[str]] = {
     "schedule":      {"schedule", "exam", "exams", "timetable", "class",
                       "classes", "test", "tests"},
     "students":      {"student", "students", "enrolled", "enrollment",
-                      "defaulter", "defaulters", "pending"},
+                      "pending"},
+    "requirements":  {"requirements", "prerequisite", "join", "criteria", "need"},
     "map":           {"map", "location", "where", "campus", "directions"},
     "optimize":      {"optimize", "optimise", "best", "maximum", "plan",
                       "recommend", "suggest"},
@@ -77,6 +78,17 @@ def classify_intent(query: str) -> str:
     tokens = _tokenize(query)
     if not tokens:
         return "unknown"
+
+    # Priority check for 'requirements' (similar to Github repo)
+    req_keywords = INTENT_KEYWORDS["requirements"]
+    if any(token in req_keywords for token in tokens):
+        return "requirements"
+        
+    for token in tokens:
+        if len(token) >= 8:
+            dist = find_closest_keyword(token, req_keywords, max_distance=2)
+            if dist:
+                return "requirements"
 
     # Precompute a flat keyword list for fuzzy fallback.
     all_keywords = [kw for kws in INTENT_KEYWORDS.values() for kw in kws]
@@ -125,12 +137,12 @@ class Chatbot:
     to self.handlers. No if/elif ladder to grow -> clean and extensible.
     """
 
-    def __init__(self, handlers: Dict[str, Callable[[], str]]) -> None:
+    def __init__(self, handlers: Dict[str, Callable[[str], str]]) -> None:
         """
         Parameters
         ----------
         handlers : mapping of intent name -> function returning a text response.
-                   The function takes no args -- it closes over whatever data
+                   The function takes a query string arg -- it closes over whatever data
                    it needs (see main.py for how we wire it up).
         """
         self.handlers = handlers
@@ -139,10 +151,10 @@ class Chatbot:
         intent = classify_intent(query)
         # dict.get() with a default avoids KeyError for "unknown".
         handler = self.handlers.get(intent, self._unknown)
-        return handler()
+        return handler(query)
 
     @staticmethod
-    def _unknown() -> str:
+    def _unknown(query: str = "") -> str:
         return (
             "Sorry, I didn't catch that. Try asking about:\n"
             "  events | fees | schedule | students | map | optimize | help"

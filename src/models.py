@@ -42,11 +42,6 @@ class Student:
         """Computed property -> never stored, always derived. Avoids stale data."""
         return self.fees_paid + self.fees_due
 
-    @property
-    def is_defaulter(self) -> bool:
-        """Returns True if the student still owes fees."""
-        return self.fees_due > 0
-
 
 @dataclass
 class Event:
@@ -64,6 +59,7 @@ class Event:
     end_time: time
     location: str
     department: str
+    requirements: str
     cost: int             # rupees; used as "weight" in knapsack
     students_reached: int # used as "value"  in knapsack
     latitude: float

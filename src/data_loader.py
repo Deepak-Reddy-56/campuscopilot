@@ -105,6 +105,7 @@ def load_events() -> List[Event]:
             end_time=end,
             location=row.Location,
             department=row.Department,
+            requirements=str(getattr(row, "Requirements", "None")),
             cost=int(row.Cost),
             students_reached=int(row.StudentsReached),
             latitude=float(row.Latitude),

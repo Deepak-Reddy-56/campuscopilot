@@ -49,10 +49,18 @@ def generate_campus_map(events: List[Event], selected_ids: Optional[Set[str]] = 
     # "OpenStreetMap" tiles are free and attribution-correct by default.
     # Setting tiles=None and re-adding would let us use custom tile providers.
     campus_map = folium.Map(
-        location=[avg_lat, avg_lon],
+        location=[12.863264862102216, 77.43789509547811],
         zoom_start=17,
         tiles="OpenStreetMap",
     )
+
+    # Added requested landmark: First Block
+    folium.Marker(
+        location=[12.863264862102216, 77.43789509547811],
+        popup=folium.Popup("<b>First Block</b>", max_width=200),
+        tooltip="First Block",
+        icon=folium.Icon(color="red", icon="building", prefix="fa"),
+    ).add_to(campus_map)
 
     for ev in events:
         is_selected = ev.event_id in selected_ids

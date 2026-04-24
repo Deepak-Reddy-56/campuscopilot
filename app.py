@@ -143,7 +143,7 @@ def _extract_entities(query: str) -> dict:
     return {"dept": dept, "sharing": sharing}
 
 
-def _web_show_events(dept: str | None = None) -> str:
+def _web_show_events(dept: str | None = None, query: str = "") -> str:
     """
     Returns formatted events, optionally filtered by department.
 
@@ -192,7 +192,7 @@ def _web_show_events(dept: str | None = None) -> str:
     return "\n".join(lines)
 
 
-def _web_show_fees(branch: str | None = None, hostel_tier: str | None = None) -> str:
+def _web_show_fees(branch: str | None = None, hostel_tier: str | None = None, query: str = "") -> str:
     """
     Returns fees filtered by branch and/or hostel sharing tier.
 
@@ -265,7 +265,7 @@ def _web_show_fees(branch: str | None = None, hostel_tier: str | None = None) ->
     return "\n".join(lines)
 
 
-def _web_show_schedule() -> str:
+def _web_show_schedule(dept: str | None = None, query: str = "") -> str:
     """
     Chat handler — outputs exam schedule grouped by ExamType,
     then sorted by Department within each group.
@@ -279,8 +279,11 @@ def _web_show_schedule() -> str:
 
     TYPE_ORDER = {t: i for i, t in enumerate(["CIA1", "CIA2", "CIA3", "Lab", "Semester"])}
 
+    # Filter by department if specified
+    df_filtered = schedule_df if dept is None or dept == "ALL" else schedule_df[schedule_df["Department"].str.upper() == dept]
+
     # Sort: exam type order first, then department alpha, then date
-    df_sorted = schedule_df.sort_values(
+    df_sorted = df_filtered.sort_values(
         ["ExamType", "Department", "Date"],
         key=lambda col: col.map(TYPE_ORDER) if col.name == "ExamType" else col
     )
@@ -445,22 +448,25 @@ def api_chat():
     dept     = entities["dept"]
     sharing  = entities["sharing"]
 
-    # ── Word-set presence checks  (O(k) where k = number of sentinel words) ──
     EVENT_WORDS: frozenset = frozenset({
         "event", "events", "fest", "workshop", "hackathon", "contest", "fair",
         "cultural", "startup", "robotics", "career", "coding", "presentation",
-        "upcoming", "happening", "show", "schedule", "activity"
+        "upcoming", "happening", "show", "activity"
     })
     FEE_WORDS: frozenset = frozenset({
         "fee", "fees", "cost", "hostel", "tuition", "payment", "money",
         "expense", "charges", "sharing", "room", "accommodation"
     })
+    SCHEDULE_WORDS: frozenset = frozenset({
+        "exam", "exams", "schedule", "timetable", "test", "tests", "cia", "cia1", "cia2", "cia3"
+    })
     q_tokens: set = set(q_lower.translate(str.maketrans("", "", "?.,!;:\"'")).split())
 
-    has_event_word  = bool(q_tokens & EVENT_WORDS)
-    has_fee_word    = bool(q_tokens & FEE_WORDS)
-    is_hostel       = any(w in q_lower for w in ("hostel", "room", "sharing", "accommodation", "mess"))
-    is_tuition      = any(w in q_lower for w in ("tuition", "semester fee", "lab fee", "academic fee"))
+    has_event_word    = bool(q_tokens & EVENT_WORDS)
+    has_fee_word      = bool(q_tokens & FEE_WORDS)
+    has_schedule_word = bool(q_tokens & SCHEDULE_WORDS)
+    is_hostel         = any(w in q_lower for w in ("hostel", "room", "sharing", "accommodation", "mess"))
+    is_tuition        = any(w in q_lower for w in ("tuition", "semester fee", "lab fee", "academic fee"))
 
     # ── Unique departments from events data ─────────────────────────────────
     ev_depts: list = sorted({ev.department for ev in events if ev.department != "ALL"})
@@ -470,8 +476,16 @@ def api_chat():
     # Priority: explicit entity signals beat intent classification.
     # ====================================================================
 
-    # ── 1. dept + event-word  → EVENTS (e.g. "what are the upcoming cs events")
-    if dept and has_event_word and not has_fee_word:
+    # ── 1. dept + schedule-word → SCHEDULE (e.g. "upcoming cs exams")
+    # Must check this before events, because "upcoming exams" contains "upcoming" (event word)
+    if dept and has_schedule_word and not has_fee_word:
+        raw  = _web_show_schedule(dept=dept)
+        text, images, map_url = _parse_response(raw)
+        follow = [] if dept == "ALL" else ["show events", "fees"]
+        return jsonify({"text": text, "images": images, "map": map_url, "chips": follow})
+
+    # ── 2. dept + event-word  → EVENTS (e.g. "what are the upcoming cs events")
+    if dept and has_event_word and not has_fee_word and not has_schedule_word:
         raw  = _web_show_events(dept=dept)
         text, images, map_url = _parse_response(raw)
         follow = [] if dept == "ALL" else ["all events", "show schedule"]
@@ -530,7 +544,7 @@ def api_chat():
         return jsonify({"text": text, "images": images, "map": map_url, "chips": []})
 
     if intent == "schedule":
-        raw = _web_show_schedule()
+        raw = _web_show_schedule(dept=dept)
         text, images, map_url = _parse_response(raw)
         dept_chips = [f"{d} schedule" for d in sorted(schedule_df["Department"].unique())]
         return jsonify({"text": text, "images": images, "map": map_url,

@@ -234,7 +234,7 @@ function chipHtml(chips) {
 
   return `<div class="suggestion-row">`
     + items.map(([label, val]) =>
-        `<span class="suggestion-chip" onclick="sendSuggestion('${val.replace(/'/g, "\\'")}")">${escHtml(label)}</span>`
+        `<span class="suggestion-chip" onclick="sendSuggestion('${val.replace(/'/g, "\\'")}')">${escHtml(label)}</span>`
       ).join('')
     + `</div>`;
 }

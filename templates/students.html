@@ -26,37 +26,9 @@
       </div>
     </div>
 
-    <div class="card p-5 flex items-center gap-4">
-      <div class="w-11 h-11 rounded-xl flex items-center justify-center"
-           style="background:#dcfce7;">
-        <svg class="w-6 h-6" style="color:#16a34a" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </div>
-      <div>
-        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Fully Paid</p>
-        <p class="text-3xl font-bold text-slate-900">{{ students | length - defaulters | length }}</p>
-      </div>
-    </div>
-
-    <div class="card p-5 flex items-center gap-4">
-      <div class="w-11 h-11 rounded-xl flex items-center justify-center"
-           style="background:#fee2e2;">
-        <svg class="w-6 h-6" style="color:#dc2626" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-      </div>
-      <div>
-        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Defaulters</p>
-        <p class="text-3xl font-bold text-slate-900">{{ defaulters | length }}</p>
-      </div>
-    </div>
-
   </div>
 
-  <div class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-6">
+  <div class="grid grid-cols-1 gap-5 mb-6">
 
     <!-- Dept breakdown -->
     <div class="card p-5">
@@ -76,50 +48,6 @@
         {% endfor %}
       </div>
     </div>
-
-    <!-- Defaulters table -->
-    {% if defaulters %}
-    <div class="card overflow-hidden xl:col-span-2">
-      <div class="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-red-500"></span>
-        <h2 class="text-sm font-semibold text-slate-700">Fee Defaulters</h2>
-      </div>
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-slate-100" style="background:#fff7f7;">
-            <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">ID</th>
-            <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Name</th>
-            <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Dept</th>
-            <th class="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Amount Due</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for s in defaulters %}
-          <tr class="border-b border-slate-50 hover:bg-red-50/30 transition-colors">
-            <td class="px-5 py-3 text-slate-500 font-mono text-xs">{{ s.student_id }}</td>
-            <td class="px-5 py-3 font-semibold text-slate-800">{{ s.name }}</td>
-            <td class="px-5 py-3">
-              <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                    style="background:#ede9fe;color:#5b21b6;">{{ s.department }}</span>
-            </td>
-            <td class="px-5 py-3 text-right font-semibold text-red-600">{{ s.fees_due | currency }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <div class="card xl:col-span-2 p-8 flex flex-col items-center justify-center text-center">
-      <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background:#dcfce7;">
-        <svg class="w-7 h-7" style="color:#16a34a" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
-      </div>
-      <p class="font-semibold text-slate-700">No fee defaulters</p>
-      <p class="text-sm text-slate-400 mt-1">All students are up to date.</p>
-    </div>
-    {% endif %}
-
   </div>
 
   <!-- Full student list -->
@@ -141,8 +69,7 @@
         </thead>
         <tbody>
           {% for s in students %}
-          <tr class="border-b border-slate-50 hover:bg-indigo-50/20 transition-colors
-                     {% if s.is_defaulter %}bg-red-50/20{% endif %}">
+          <tr class="border-b border-slate-50 hover:bg-indigo-50/20 transition-colors">
             <td class="px-5 py-3 text-slate-500 font-mono text-xs">{{ s.student_id }}</td>
             <td class="px-5 py-3 font-medium text-slate-800">{{ s.name }}</td>
             <td class="px-5 py-3">
