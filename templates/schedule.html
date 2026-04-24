@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}Exam Schedule – CampusCopilot{% endblock %}
+
+{% block extra_css %}
+/* ── Exam‑type badge colours ── */
+.badge-CIA1     { background:#dbeafe; color:#1d4ed8; }
+.badge-CIA2     { background:#ede9fe; color:#5b21b6; }
+.badge-CIA3     { background:#fce7f3; color:#9d174d; }
+.badge-Lab      { background:#d1fae5; color:#065f46; }
+.badge-Semester { background:#fef3c7; color:#92400e; }
+
+/* ── Accordion ── */
+.acc-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background .18s;
+}
+.acc-header:hover { background: #f0eeff !important; }
+.acc-arrow {
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+  flex-shrink: 0;
+}
+.acc-open .acc-arrow { transform: rotate(180deg); }
+.acc-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height .35s cubic-bezier(.4,0,.2,1);
+}
+.acc-body.expanded { max-height: 9999px; }
+
+/* ── Hidden rows (dept filter) ── */
+tr.row-hidden { display: none; }
+
+/* ── Filter bar ── */
+.filter-bar select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236366f1'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .6rem center;
+  padding-right: 2rem;
+}
+{% endblock %}
+
+{% block content %}
+<div class="flex-1 overflow-y-auto p-8">
+
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-900">Exam Schedule</h1>
+    <p class="text-slate-500 text-sm mt-1">{{ rows | length }} exams across all types</p>
+  </div>
+
+  <!-- ── Filter bar ── -->
+  <div class="filter-bar flex flex-wrap items-center gap-3 mb-6 p-4 rounded-2xl" style="background:#f8f7ff; border:1px solid #e0e7ff;">
+    <!-- Department filter -->
+    <div class="flex items-center gap-2">
+      <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dept</label>
+      <select id="deptFilter"
+              class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-700
+                     focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none cursor-pointer">
+        <option value="ALL">All Departments</option>
+        {% for dept in dept_list %}
+        <option value="{{ dept }}">{{ dept }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Sort order -->
+    <div class="flex items-center gap-2">
+      <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Sort</label>
+      <select id="sortOrder"
+              class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-700
+                     focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none cursor-pointer">
+        <option value="date-asc">Date ↑ (earliest)</option>
+        <option value="date-desc">Date ↓ (latest)</option>
+        <option value="subject">Subject A–Z</option>
+      </select>
+    </div>
+
+    <!-- Legend chips -->
+    <div class="ml-auto flex flex-wrap gap-1.5">
+      {% for label in ['CIA1','CIA2','CIA3','Lab','Semester'] %}
+      <span class="badge-{{ label }} px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ label }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ── Accordion sections ── -->
+  {% set types_order = ['CIA2','CIA1','CIA3','Lab','Semester'] %}
+  {% set type_labels = {
+    'CIA1': 'Continuous Internal Assessment 1',
+    'CIA2': 'Continuous Internal Assessment 2 — Active',
+    'CIA3': 'Continuous Internal Assessment 3',
+    'Lab':  'Lab Examinations',
+    'Semester': 'Semester End Examinations'
+  } %}
+
+  {% for exam_type in types_order %}
+  {% set type_rows = rows | selectattr('exam_type','equalto', exam_type) | list %}
+  {% if type_rows %}
+  <div class="card overflow-hidden mb-4 acc-section {% if exam_type == 'CIA2' %}acc-open{% endif %}"
+       data-type="{{ exam_type }}">
+
+    <!-- Accordion header (click to toggle) -->
+    <div class="acc-header px-5 py-3.5 flex items-center gap-3 border-b border-slate-100"
+         style="background:#f8f7ff;"
+         onclick="toggleAcc(this.parentElement)">
+      <span class="badge-{{ exam_type }} px-2.5 py-0.5 rounded-full text-xs font-bold flex-shrink-0">{{ exam_type }}</span>
+      <span class="font-semibold text-slate-700 text-sm">{{ type_labels[exam_type] }}</span>
+      <span class="ml-1 text-xs text-slate-400 count-label">{{ type_rows | length }} exam{{ 's' if type_rows | length != 1 }}</span>
+      <svg class="acc-arrow w-4 h-4 text-slate-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </div>
+
+    <!-- Accordion body -->
+    <div class="acc-body {% if exam_type == 'CIA2' %}expanded{% endif %}">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-100 text-left">
+            <th class="px-5 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wide">Date</th>
+            <th class="px-5 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wide">Time</th>
+            <th class="px-5 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wide">Dept</th>
+            <th class="px-5 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wide">Subject</th>
+            <th class="px-5 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wide">Room</th>
+          </tr>
+        </thead>
+        <tbody class="sortable-body" data-type="{{ exam_type }}">
+          {% for row in type_rows | sort(attribute='date') %}
+          <tr class="border-b border-slate-50 hover:bg-indigo-50/30 transition-colors"
+              data-dept="{{ row.dept }}"
+              data-date="{{ row.date.strftime('%Y-%m-%d') }}"
+              data-subject="{{ row.subject }}">
+            <td class="px-5 py-3 font-medium text-slate-700 whitespace-nowrap">{{ row.date | fmtdate }}</td>
+            <td class="px-5 py-3 text-slate-500 text-xs whitespace-nowrap">{{ row.start }} – {{ row.end }}</td>
+            <td class="px-5 py-3">
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                    style="background:#ede9fe;color:#5b21b6;">{{ row.dept }}</span>
+            </td>
+            <td class="px-5 py-3 font-semibold text-slate-800">{{ row.subject }}</td>
+            <td class="px-5 py-3 text-slate-500">{{ row.room }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <!-- Empty-state for filtered view -->
+      <p class="empty-msg hidden text-slate-400 text-sm text-center py-6">No exams match this filter.</p>
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Accordion toggle ──
+function toggleAcc(section) {
+  const body  = section.querySelector('.acc-body');
+  const open  = section.classList.contains('acc-open');
+  section.classList.toggle('acc-open', !open);
+  body.classList.toggle('expanded', !open);
+}
+
+// ── Filter + sort logic ──
+const deptFilter = document.getElementById('deptFilter');
+const sortOrder  = document.getElementById('sortOrder');
+
+function applyFilters() {
+  const dept = deptFilter.value;
+  const sort = sortOrder.value;
+
+  document.querySelectorAll('.acc-section').forEach(section => {
+    const tbody    = section.querySelector('.sortable-body');
+    const emptyMsg = section.querySelector('.empty-msg');
+    if (!tbody) return;
+
+    // Gather & filter rows
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    let visible = rows;
+
+    if (dept !== 'ALL') {
+      rows.forEach(r => {
+        const match = r.dataset.dept === dept;
+        r.classList.toggle('row-hidden', !match);
+      });
+      visible = rows.filter(r => r.dataset.dept === dept);
+    } else {
+      rows.forEach(r => r.classList.remove('row-hidden'));
+    }
+
+    // Sort visible rows (reorder DOM)
+    const sortable = visible.slice();
+    if (sort === 'date-asc') {
+      sortable.sort((a, b) => a.dataset.date.localeCompare(b.dataset.date));
+    } else if (sort === 'date-desc') {
+      sortable.sort((a, b) => b.dataset.date.localeCompare(a.dataset.date));
+    } else if (sort === 'subject') {
+      sortable.sort((a, b) => a.dataset.subject.localeCompare(b.dataset.subject));
+    }
+    sortable.forEach(r => tbody.appendChild(r));
+
+    // Show/hide section & empty message
+    const hasVisible = visible.length > 0;
+    emptyMsg.classList.toggle('hidden', hasVisible);
+
+    // Auto-expand section if it has matching rows
+    if (dept !== 'ALL' && hasVisible) {
+      section.classList.add('acc-open');
+      section.querySelector('.acc-body').classList.add('expanded');
+    }
+
+    // Update count badge
+    const countLabel = section.querySelector('.count-label');
+    if (countLabel) {
+      const n = hasVisible ? visible.length : 0;
+      countLabel.textContent = n + (n === 1 ? ' exam' : ' exams');
+    }
+  });
+}
+
+deptFilter.addEventListener('change', applyFilters);
+sortOrder.addEventListener('change', applyFilters);
+</script>
+{% endblock %}

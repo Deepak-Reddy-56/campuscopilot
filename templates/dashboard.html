@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – CampusCopilot{% endblock %}
+
+{% block extra_css %}
+/* ── Gentle clash strip ── */
+.clash-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .72rem;
+  font-weight: 500;
+  padding: .22rem .65rem;
+  border-radius: 9999px;
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde68a;
+  white-space: nowrap;
+}
+/* ── Event timeline row ── */
+.ev-timeline { display: flex; gap: .75rem; overflow-x: auto; padding-bottom: .25rem; }
+.ev-timeline::-webkit-scrollbar { height: 4px; }
+.ev-timeline::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
+.ev-tile {
+  flex-shrink: 0;
+  width: 210px;
+  border-radius: 1rem;
+  padding: 1rem;
+  background: #f8f7ff;
+  border: 1px solid #e0e7ff;
+  position: relative;
+  transition: box-shadow .2s, transform .2s;
+}
+.ev-tile:hover { box-shadow: 0 4px 20px rgba(99,102,241,.1); transform: translateY(-1px); }
+.ev-tile .dot-clash {
+  position: absolute;
+  top: .6rem;
+  right: .6rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  border: 2px solid #fff;
+}
+{% endblock %}
+
+{% block content %}
+<div class="flex-1 overflow-y-auto p-8">
+
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-slate-900">Welcome back</h1>
+    <p class="text-slate-500 text-sm mt-1">Here's what's happening on campus today.</p>
+  </div>
+
+  <!-- Stat row -->
+  <div class="grid grid-cols-3 gap-5 mb-8">
+
+    <div class="card p-5 flex items-center gap-4">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:#dbeafe;">
+        <svg class="w-6 h-6" style="color:#2563eb" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Events</p>
+        <p class="text-3xl font-bold text-slate-900 mt-0.5">{{ total_events }}</p>
+      </div>
+    </div>
+
+    <div class="card p-5 flex items-center gap-4">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:#fef3c7;">
+        <svg class="w-6 h-6" style="color:#d97706" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Next Exam</p>
+        {% if next_exam is not none %}
+        <p class="text-base font-bold text-slate-900 mt-0.5 leading-tight">{{ next_exam['Subject'] }}</p>
+        <p class="text-xs text-amber-600 font-medium">{{ next_exam['Date'] | fmtdate }}
+          <span class="text-slate-400 font-normal">· {{ next_exam['ExamType'] }}</span></p>
+        {% else %}
+        <p class="text-base font-semibold text-slate-400 mt-0.5">No exams scheduled</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card p-5 flex items-center gap-4">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:#dcfce7;">
+        <svg class="w-6 h-6" style="color:#16a34a" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Chat</p>
+        <a href="/chat" class="text-base font-bold text-indigo-600 hover:underline mt-0.5 block">Ask the assistant</a>
+        <p class="text-xs text-slate-400">Events · Fees · Schedule</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Upcoming events (horizontal timeline) + Quick Access -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-5">
+
+    <div class="card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Upcoming Events</h2>
+        <a href="/events" class="text-xs text-indigo-600 font-medium hover:underline">View all →</a>
+      </div>
+      {% if upcoming_events %}
+      <div class="ev-timeline">
+        {% for ev in upcoming_events %}
+        {% set ev_conflicts = conflicts.get(ev.event_id, []) %}
+        <div class="ev-tile">
+          {% if ev_conflicts %}<span class="dot-clash" title="Exam nearby"></span>{% endif %}
+          <p class="text-xs font-bold text-indigo-400 uppercase tracking-wide">{{ ev.date.strftime('%b %d') }}</p>
+          <p class="font-semibold text-slate-800 text-sm mt-1 leading-snug">{{ ev.name }}</p>
+          <p class="text-xs text-slate-500 mt-1">{{ ev.start_time }}–{{ ev.end_time }}</p>
+          <p class="text-xs text-slate-400 mt-0.5 truncate">{{ ev.location }}</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded-full text-xs font-semibold"
+                style="background:#ede9fe;color:#5b21b6;">{{ ev.department }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-slate-400 text-sm">No upcoming events.</p>
+      {% endif %}
+    </div>
+
+    <!-- Quick links -->
+    <div class="card p-6">
+      <h2 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4">Quick Access</h2>
+      <div class="grid grid-cols-2 gap-3">
+        {% for label, url, bg, desc in [
+          ('Events',       '/events',   '#6366f1', 'Browse campus events'),
+          ('Exam Schedule','/schedule', '#0ea5e9', 'CIA, Lab & Semester'),
+          ('Fees',         '/fees',     '#10b981', 'Tuition & hostel fees'),
+          ('Chat',         '/chat',     '#8b5cf6', 'Ask the assistant'),
+        ] %}
+        <a href="{{ url }}"
+           class="rounded-xl p-4 flex flex-col gap-1 hover:opacity-90 transition-opacity"
+           style="background:{{ bg }}15; border:1px solid {{ bg }}30;">
+          <span class="font-semibold text-sm" style="color:{{ bg }};">{{ label }}</span>
+          <span class="text-xs text-slate-500">{{ desc }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Heads-up notice board (gentle, dismissible) ── -->
+  {% set all_clashes = [] %}
+  {% for ev in upcoming_events %}
+    {% for c in conflicts.get(ev.event_id, []) %}
+      {% set _ = all_clashes.append((ev, c)) %}
+    {% endfor %}
+  {% endfor %}
+
+  {% if all_clashes %}
+  <div id="noticeBoard" class="card p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <h3 class="text-sm font-semibold text-slate-700">Heads Up</h3>
+        <span class="text-xs text-slate-400">— exam & event overlaps this week</span>
+      </div>
+      <button onclick="document.getElementById('noticeBoard').style.display='none'"
+              class="text-slate-300 hover:text-slate-500 transition-colors text-lg leading-none"
+              title="Dismiss">×</button>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      {% for ev, c in all_clashes %}
+      <span class="clash-chip">
+        {% if c.kind == 'same_day' %}
+          📅 {{ ev.name }} &amp; {{ c.exam_type }} {{ c.subject }} — same day
+        {% else %}
+          🗓 {{ ev.name }} — {{ c.exam_type }} {{ c.subject }} is next day
+        {% endif %}
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

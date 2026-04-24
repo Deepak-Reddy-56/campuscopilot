@@ -1,0 +1,478 @@
+{% extends "base.html" %}
+{% block title %}Chat – CampusCopilot{% endblock %}
+
+{% block extra_css %}
+/* ── Layout ── */
+.chat-wrap { display:flex; flex-direction:column; height:100%; background:#f8f9ff; }
+
+/* ── Messages area ── */
+.messages {
+  flex:1; overflow-y:auto; padding:1.75rem 1.5rem;
+  display:flex; flex-direction:column; gap:1.25rem;
+}
+
+/* ── Bubbles ── */
+.bubble {
+  max-width:74%; padding:.85rem 1.1rem;
+  border-radius:1.25rem; font-size:.875rem;
+  line-height:1.7; word-break:break-word;
+}
+.bubble-user {
+  align-self:flex-end;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  color:#fff; border-bottom-right-radius:.35rem;
+}
+.bubble-bot {
+  align-self:flex-start; background:#ffffff; color:#1e293b;
+  border-bottom-left-radius:.35rem;
+  box-shadow:0 2px 12px rgba(25,28,32,.06), 0 8px 32px rgba(79,70,229,.06);
+}
+
+/* ── Bot row (avatar + bubble) ── */
+.bot-row { display:flex; align-items:flex-start; gap:.85rem; }
+.bot-avatar {
+  width:2.2rem; height:2.2rem; border-radius:.65rem; flex-shrink:0;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  display:flex; align-items:center; justify-content:center;
+  font-size:.7rem; font-weight:700; color:#fff; letter-spacing:.03em;
+}
+
+/* ── Markdown formatting inside bot bubble ── */
+.bubble-bot strong { font-weight:700; color:#312e81; }
+.bubble-bot em { font-style:italic; color:#475569; }
+.bubble-bot .chat-list { margin:.4rem 0 .4rem 1.1rem; padding:0; list-style:disc; }
+.bubble-bot .chat-list li { margin:.15rem 0; }
+.bubble-bot .chat-section-header {
+  font-weight:700; font-size:.8rem; text-transform:uppercase;
+  letter-spacing:.06em; color:#4f46e5; margin:.6rem 0 .2rem;
+}
+.bubble-bot .chat-sub { color:#64748b; font-size:.8rem; }
+.bubble-bot hr.chat-divider { border:none; border-top:1px solid #e0e7ff; margin:.5rem 0; }
+
+/* ── Event cards inside chat ── */
+.chat-event-card {
+  margin:.4rem 0; padding:.6rem .85rem;
+  border-radius:.65rem; background:#f8f7ff;
+  border-left:3px solid #6366f1;
+}
+.chat-event-name { font-weight:700; color:#312e81; font-size:.875rem; }
+.chat-event-meta { font-size:.75rem; color:#64748b; margin-top:.15rem; }
+.chat-date-header {
+  font-size:.7rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; color:#6366f1;
+  margin:.85rem 0 .2rem; padding:.25rem .5rem;
+  background:#eef2ff; border-radius:.35rem; display:inline-block;
+}
+.clash-warn {
+  display:inline-flex; align-items:center; gap:.3rem;
+  font-size:.72rem; font-weight:600; padding:.2rem .55rem;
+  border-radius:9999px; margin-top:.3rem; margin-right:.3rem;
+  background:#fef3c7; color:#92400e;
+}
+.clash-info {
+  display:inline-flex; align-items:center; gap:.3rem;
+  font-size:.72rem; font-weight:600; padding:.2rem .55rem;
+  border-radius:9999px; margin-top:.3rem; margin-right:.3rem;
+  background:#f0fdf4; color:#166534;
+}
+
+/* ── Timestamp ── */
+.msg-time { font-size:.65rem; color:#94a3b8; margin-top:.35rem; }
+.user-time { text-align:right; }
+
+/* ── Image grid ── */
+.img-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.85rem; }
+.img-thumb { border-radius:.75rem; overflow:hidden; cursor:pointer; max-width:240px; border:2px solid #e0e7ff; }
+.img-thumb img { display:block; width:100%; height:auto; }
+
+/* ── Map button ── */
+.map-btn {
+  display:inline-flex; align-items:center; gap:.4rem; margin-top:.85rem;
+  padding:.5rem 1rem; border-radius:.65rem; font-size:.8rem; font-weight:600;
+  text-decoration:none; background:#ede9fe; color:#5b21b6;
+  border:1px solid #c4b5fd; transition:background .15s;
+}
+.map-btn:hover { background:#ddd6fe; }
+
+/* ── Suggestion chips ── */
+.suggestion-row { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.85rem; }
+.suggestion-chip {
+  padding:.38rem .85rem; border-radius: 9999px; font-size:.78rem; font-weight:500;
+  border:1.5px solid #c7d2fe; color:#4f46e5; background:#eef2ff;
+  cursor:pointer; transition:background .15s, border-color .15s;
+  white-space:nowrap;
+}
+.suggestion-chip:hover { background:#e0e7ff; border-color:#a5b4fc; }
+
+/* ── Loading dots ── */
+.dot-spin { display:inline-flex; gap:5px; align-items:center; padding:.45rem .15rem; }
+.dot-spin span {
+  width:7px; height:7px; border-radius:50%; background:#a5b4fc;
+  animation:bounce 1.3s infinite ease-in-out;
+}
+.dot-spin span:nth-child(2) { animation-delay:.18s; }
+.dot-spin span:nth-child(3) { animation-delay:.36s; }
+@keyframes bounce { 0%,80%,100%{transform:scale(.55)} 40%{transform:scale(1)} }
+
+/* ── Image modal ── */
+#imgModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:9999; align-items:center; justify-content:center; }
+#imgModal.open { display:flex; }
+#imgModal img  { max-width:90vw; max-height:90vh; border-radius:1rem; box-shadow:0 24px 64px rgba(0,0,0,.5); }
+
+/* ── Input bar ── */
+.input-bar { flex-shrink:0; padding:1rem 1.25rem 1.25rem; background:#ffffff; border-top:1px solid #f0f0f8; }
+.input-pill {
+  display:flex; align-items:center; gap:.6rem;
+  background:#f1f0fb; border:1.5px solid #e0e7ff; border-radius:9999px;
+  padding:.5rem .5rem .5rem 1.1rem; transition:border-color .2s, box-shadow .2s;
+}
+.input-pill:focus-within { border-color:#818cf8; box-shadow:0 0 0 3px rgba(129,140,248,.15); background:#fff; }
+.input-pill input {
+  flex:1; border:none; background:transparent; outline:none;
+  font-size:.875rem; color:#1e293b;
+}
+.input-pill input::placeholder { color:#94a3b8; }
+.send-btn {
+  width:2.2rem; height:2.2rem; border-radius:50%; flex-shrink:0; border:none; cursor:pointer;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity .15s, transform .15s;
+}
+.send-btn:hover { opacity:.88; transform:scale(1.06); }
+.send-btn:disabled { opacity:.4; }
+{% endblock %}
+
+{% block content %}
+<div class="chat-wrap">
+
+  <!-- ── Top bar ── -->
+  <div class="flex items-center gap-3 px-6 py-3.5 border-b border-slate-100 bg-white/90 flex-shrink-0"
+       style="backdrop-filter:blur(10px);">
+    <div class="bot-avatar">CC</div>
+    <div>
+      <p class="font-semibold text-slate-900 text-sm leading-none">Campus Assistant</p>
+      <p class="text-xs text-green-500 font-medium mt-0.5">● Online</p>
+    </div>
+    <button id="clearBtn"
+            class="ml-auto text-xs text-slate-400 hover:text-slate-600 border border-slate-200 rounded-lg px-3 py-1.5 transition-colors"
+            onclick="clearChat()">Clear</button>
+  </div>
+
+  <!-- ── Messages ── -->
+  <div class="messages" id="messages">
+    <!-- Welcome bubble -->
+    <div class="bot-row">
+      <div class="bot-avatar">CC</div>
+      <div>
+        <div class="bubble bubble-bot">
+          <p>Hi! I'm your <strong>Campus Assistant</strong>. Ask me about:</p>
+          <ul class="chat-list">
+            <li><strong>Events</strong> — upcoming events with exam clash info</li>
+            <li><strong>Fees</strong> — tuition, hostel &amp; registration</li>
+            <li><strong>Exam schedule</strong> — CIA 1/2/3, Lab &amp; Semester</li>
+            <li><strong>Campus map</strong> — interactive event locations</li>
+          </ul>
+          <p class="chat-sub mt-1">Typos are fine — I'll figure it out 😊</p>
+          <div class="suggestion-row">
+            <span class="suggestion-chip" onclick="sendSuggestion('show events')">📅 Events</span>
+            <span class="suggestion-chip" onclick="sendSuggestion('fees')">💰 Fees</span>
+            <span class="suggestion-chip" onclick="sendSuggestion('exam schedule')">📋 Schedule</span>
+            <span class="suggestion-chip" onclick="sendSuggestion('campus map')">🗺 Map</span>
+          </div>
+        </div>
+        <p class="msg-time">Just now</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Input bar ── -->
+  <div class="input-bar">
+    <form id="chatForm">
+      <div class="input-pill">
+        <input id="msgInput" type="text" autocomplete="off"
+               placeholder="Ask about events, fees, schedule…" />
+        <button type="submit" class="send-btn" id="sendBtn">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Image modal ── -->
+<div id="imgModal" onclick="this.classList.remove('open')">
+  <img id="modalImg" src="" alt="chart" />
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const messages = document.getElementById('messages');
+const form     = document.getElementById('chatForm');
+const input    = document.getElementById('msgInput');
+const sendBtn  = document.getElementById('sendBtn');
+
+// ── Fallback chips shown when API returns no specific chips ──
+const FALLBACK_CHIPS = [
+  ['📅 Events',    'show events'],
+  ['💰 Fees',      'fees'],
+  ['📋 Schedule',  'exam schedule'],
+  ['🗺 Map',       'campus map'],
+];
+
+function chipHtml(chips) {
+  /**
+   * Renders chip buttons from the API's chips[] array.
+   * Falls back to FALLBACK_CHIPS if none provided.
+   * chips[] items are plain strings (the text to send when clicked).
+   */
+  const items = (chips && chips.length)
+    ? chips.map(c => [`${c}`, c])    // label = value for API chips
+    : FALLBACK_CHIPS;
+
+  return `<div class="suggestion-row">`
+    + items.map(([label, val]) =>
+        `<span class="suggestion-chip" onclick="sendSuggestion('${val.replace(/'/g, "\\'")}")">${escHtml(label)}</span>`
+      ).join('')
+    + `</div>`;
+}
+
+function sendSuggestion(text) {
+  input.value = text;
+  form.dispatchEvent(new Event('submit'));
+}
+
+function nowTime() {
+  return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function scrollBottom() {
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/**
+ * formatText — lightweight markdown-like renderer
+ * Handles: **bold**, *italic*, bullet lists (•  or - or *), and section headers (ALL CAPS).
+ * Python concept: same string→tokens approach as the chatbot's _parse_response in app.py.
+ */
+function formatText(raw) {
+  /**
+   * Multi-pass line formatter — handles:
+   *   --- Date ---        → date section header chip
+   *   • **Event Name**    → event card with name
+   *   indented meta       → sub-line inside current event card
+   *   ⚠ / ℹ lines        → clash/info pill badges
+   *   **bold**, *italic*  → inline markdown
+   *   ALL CAPS lines      → section headers
+   *   • / - bullets       → list items
+   *   --- dividers        → HR
+   */
+  const lines = raw.split('\n');
+  const out = [];
+  let inList   = false;
+  let inCard   = false;   // tracking open event card
+
+  const closeCard = () => { if (inCard) { out.push('</div>'); inCard = false; } };
+  const closeList = () => { if (inList) { out.push('</ul>'); inList = false; } };
+
+  const inlineMd = (s) => s
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g,   '<em>$1</em>');
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw_line = lines[i];
+    const trimmed  = raw_line.trim();
+    const escaped  = escHtml(raw_line);
+
+    // ── Date header:  --- 25 Apr 2026 ---
+    if (/^---\s*.+\s*---$/.test(trimmed)) {
+      closeList(); closeCard();
+      const label = trimmed.replace(/^---\s*/, '').replace(/\s*---$/, '');
+      out.push(`<span class="chat-date-header">📅 ${escHtml(label)}</span>`);
+      continue;
+    }
+
+    // ── Event bullet:  • **Name**
+    if (/^•\s+\*\*/.test(trimmed)) {
+      closeList(); closeCard();
+      const name = trimmed.replace(/^•\s+/, '').replace(/\*\*(.*?)\*\*/, '$1');
+      out.push(`<div class="chat-event-card"><p class="chat-event-name">${escHtml(name)}</p>`);
+      inCard = true;
+      continue;
+    }
+
+    // ── ⚠ Exam clash line
+    if (trimmed.startsWith('⚠')) {
+      const msg = escHtml(trimmed.replace(/^⚠\s*/, ''));
+      out.push(`<span class="clash-warn">⚠ ${msg}</span>`);
+      continue;
+    }
+
+    // ── ℹ Heads-up line
+    if (trimmed.startsWith('ℹ')) {
+      const msg = escHtml(trimmed.replace(/^ℹ\s*/, ''));
+      out.push(`<span class="clash-info">ℹ️ ${msg}</span>`);
+      continue;
+    }
+
+    // ── Indented meta line inside an event card (starts with spaces)
+    if (inCard && /^\s{2,}/.test(raw_line) && trimmed !== '') {
+      // Strip leading spaces, apply inline markdown
+      const meta = inlineMd(escHtml(trimmed));
+      out.push(`<p class="chat-event-meta">${meta}</p>`);
+      continue;
+    }
+
+    // ── Bullet list items  (•, -, *, –)
+    if (/^\s*(•|-|\*|–)\s+/.test(raw_line) && !/^•\s+\*\*/.test(trimmed)) {
+      closeCard();
+      const content = inlineMd(escHtml(trimmed.replace(/^[•\-\*–]\s+/, '')));
+      if (!inList) { out.push('<ul class="chat-list">'); inList = true; }
+      out.push(`<li>${content}</li>`);
+      continue;
+    } else { closeList(); }
+
+    // ── Horizontal rule  (--- or ===)
+    if (/^[-=]{3,}$/.test(trimmed)) {
+      closeCard();
+      out.push('<hr class="chat-divider">'); continue;
+    }
+
+    // ── ALL-CAPS section headers
+    if (/^[A-Z][A-Z\s]{3,}$/.test(trimmed)) {
+      closeCard();
+      out.push(`<p class="chat-section-header">${escHtml(trimmed)}</p>`); continue;
+    }
+
+    // ── Empty line → close card, add spacing
+    if (trimmed === '') {
+      closeCard();
+      out.push('<br>');
+      continue;
+    }
+
+    // ── Normal line
+    closeCard();
+    out.push(`<span>${inlineMd(escaped)}</span><br>`);
+  }
+
+  closeList(); closeCard();
+  if (inList) out.push('</ul>');
+  return out.join('');
+}
+
+function addUserBubble(text) {
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;';
+  div.innerHTML = `
+    <div class="bubble bubble-user">${escHtml(text)}</div>
+    <p class="msg-time user-time">${nowTime()}</p>`;
+  messages.appendChild(div);
+  scrollBottom();
+}
+
+function addLoadingBubble() {
+  const row = document.createElement('div');
+  row.className = 'bot-row';
+  row.id = 'loading-bubble';
+  row.innerHTML = `
+    <div class="bot-avatar">CC</div>
+    <div class="bubble bubble-bot" style="padding:.55rem .85rem;">
+      <div class="dot-spin"><span></span><span></span><span></span></div>
+    </div>`;
+  messages.appendChild(row);
+  scrollBottom();
+}
+
+function removeLoading() {
+  const el = document.getElementById('loading-bubble');
+  if (el) el.remove();
+}
+
+function addBotBubble(text, images, mapUrl, chips) {
+  const row = document.createElement('div');
+  row.className = 'bot-row';
+
+  let inner = `<div class="bubble bubble-bot">${formatText(text)}`;
+
+  if (images && images.length) {
+    inner += `<div class="img-grid">`;
+    images.forEach(src => {
+      inner += `<div class="img-thumb" onclick="openModal('${src}')"><img src="${src}" loading="lazy" /></div>`;
+    });
+    inner += `</div>`;
+  }
+
+  if (mapUrl) {
+    inner += `<a href="${mapUrl}" target="_blank" class="map-btn">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+      </svg>
+      Open Campus Map</a>`;
+  }
+
+  // Dynamic chips from API (or fallback set)
+  inner += chipHtml(chips) + `</div>`;
+
+  row.innerHTML = `<div class="bot-avatar">CC</div><div>${inner}<p class="msg-time">${nowTime()}</p></div>`;
+  messages.appendChild(row);
+  scrollBottom();
+}
+
+function openModal(src) {
+  document.getElementById('modalImg').src = src;
+  document.getElementById('imgModal').classList.add('open');
+}
+
+function clearChat() {
+  // Keep only the welcome bubble (first child of messages)
+  while (messages.children.length > 1) {
+    messages.removeChild(messages.lastChild);
+  }
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  input.disabled = true;
+  sendBtn.disabled = true;
+
+  addUserBubble(msg);
+  addLoadingBubble();
+
+  try {
+    const res  = await fetch('/api/chat', {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify({message: msg}),
+    });
+    const data = await res.json();
+    removeLoading();
+    addBotBubble(data.text || '', data.images || [], data.map || null, data.chips || []);
+  } catch {
+    removeLoading();
+    addBotBubble('Something went wrong. Please try again.', [], null, []);
+  } finally {
+    input.disabled = false;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+});
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    form.dispatchEvent(new Event('submit'));
+  }
+});
+</script>
+{% endblock %}

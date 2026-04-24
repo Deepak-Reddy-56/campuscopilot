@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Finance – CampusCopilot{% endblock %}
+
+{% block content %}
+<div class="flex-1 overflow-y-auto p-8">
+
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-900">Financial Overview</h1>
+    <p class="text-slate-500 text-sm mt-1">Budget utilization &amp; fee collections</p>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="grid grid-cols-2 gap-5 mb-6">
+    <div class="card p-5 flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:#dcfce7;">
+        <svg class="w-6 h-6" style="color:#16a34a" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Fees Collected</p>
+        <p class="text-3xl font-bold text-slate-900 mt-0.5">{{ collected | currency }}</p>
+      </div>
+    </div>
+    <div class="card p-5 flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+           style="background:#fef3c7;">
+        <svg class="w-6 h-6" style="color:#d97706" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Fees Pending</p>
+        <p class="text-3xl font-bold text-slate-900 mt-0.5">{{ pending | currency }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Department utilization table -->
+  <div class="card overflow-hidden mb-6">
+    <div class="px-5 py-3.5 border-b border-slate-100">
+      <h2 class="text-sm font-semibold text-slate-700">Department Utilization</h2>
+    </div>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-slate-100" style="background:#f8f7ff;">
+          <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Department</th>
+          <th class="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Expense</th>
+          <th class="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Budget</th>
+          <th class="text-right px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Utilization</th>
+          <th class="text-center px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr class="border-b border-slate-50 hover:bg-indigo-50/30 transition-colors">
+          <td class="px-5 py-3.5 font-semibold text-slate-800">{{ row.Department }}</td>
+          <td class="px-5 py-3.5 text-right text-slate-700">{{ row.TotalExpense | currency }}</td>
+          <td class="px-5 py-3.5 text-right text-slate-700">{{ row.TotalBudget | currency }}</td>
+          <td class="px-5 py-3.5 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <div class="w-20 bg-slate-100 rounded-full h-1.5">
+                {% set pct = [row['Utilization%'] | float, 100] | min %}
+                <div class="h-1.5 rounded-full"
+                     style="width:{{ pct }}%; background:{% if pct >= 90 %}#ef4444{% elif pct >= 75 %}#f59e0b{% else %}#10b981{% endif %};">
+                </div>
+              </div>
+              <span class="text-slate-600 font-medium text-xs w-10 text-right">{{ row['Utilization%'] }}%</span>
+            </div>
+          </td>
+          <td class="px-5 py-3.5 text-center">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold
+                  {% if row.Status == 'Over Budget' %}badge-over
+                  {% elif row.Status == 'Warning'    %}badge-warn
+                  {% else                            %}badge-ok{% endif %}">
+              {{ row.Status }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Charts -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+
+    <div class="card overflow-hidden">
+      <div class="px-5 py-3.5 border-b border-slate-100">
+        <h2 class="text-sm font-semibold text-slate-700">Expense vs Budget</h2>
+      </div>
+      <div class="p-4">
+        <img src="{{ chart_expenses }}" alt="Department Expenses" class="w-full rounded-lg" />
+      </div>
+    </div>
+
+    <div class="card overflow-hidden">
+      <div class="px-5 py-3.5 border-b border-slate-100">
+        <h2 class="text-sm font-semibold text-slate-700">Monthly Trend</h2>
+      </div>
+      <div class="p-4">
+        <img src="{{ chart_trend }}" alt="Monthly Trend" class="w-full rounded-lg" />
+      </div>
+    </div>
+
+    <div class="card overflow-hidden xl:col-span-2">
+      <div class="px-5 py-3.5 border-b border-slate-100">
+        <h2 class="text-sm font-semibold text-slate-700">Fees by Department</h2>
+      </div>
+      <div class="p-4 flex justify-center">
+        <img src="{{ chart_fees }}" alt="Fees Distribution" style="max-height:400px;" class="rounded-lg" />
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -128,6 +128,10 @@ def load_schedule() -> pd.DataFrame:
     """Exam schedule stays a DataFrame for easy filtering/sorting."""
     df = _safe_read_csv(FILES["schedule"])
     df["Date"] = pd.to_datetime(df["Date"])
+    if "ExamType" not in df.columns:
+        df["ExamType"] = "Semester"
+    else:
+        df["ExamType"] = df["ExamType"].fillna("Semester")
     return df
 
 

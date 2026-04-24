@@ -1,15 +1,62 @@
-Subject,Department,Date,StartTime,EndTime,Room
-Data Structures,CS,2026-05-01,10:00,13:00,H101
-Algorithms,CS,2026-05-03,10:00,13:00,H101
-Operating Systems,CS,2026-05-05,14:00,17:00,H102
-Database Systems,IT,2026-05-02,10:00,13:00,H201
-Computer Networks,IT,2026-05-04,10:00,13:00,H201
-Web Development,IT,2026-05-06,14:00,17:00,H202
-Digital Electronics,ECE,2026-05-01,14:00,17:00,H301
-Signal Processing,ECE,2026-05-03,14:00,17:00,H301
-VLSI Design,ECE,2026-05-05,10:00,13:00,H302
-Thermodynamics,ME,2026-05-02,14:00,17:00,H401
-Fluid Mechanics,ME,2026-05-04,14:00,17:00,H401
-Machine Design,ME,2026-05-06,10:00,13:00,H402
-Power Systems,EEE,2026-05-01,10:00,13:00,H501
-Control Systems,EEE,2026-05-03,10:00,13:00,H501
+Subject,Department,Date,StartTime,EndTime,Room,ExamType
+Data Structures,CS,2026-04-10,10:00,11:30,H101,CIA1
+Algorithms,CS,2026-04-11,10:00,11:30,H101,CIA1
+Operating Systems,CS,2026-04-12,10:00,11:30,H102,CIA1
+Database Systems,IT,2026-04-10,14:00,15:30,H201,CIA1
+Computer Networks,IT,2026-04-11,14:00,15:30,H201,CIA1
+Web Development,IT,2026-04-12,14:00,15:30,H202,CIA1
+Digital Electronics,ECE,2026-04-10,10:00,11:30,H301,CIA1
+Signal Processing,ECE,2026-04-11,10:00,11:30,H301,CIA1
+VLSI Design,ECE,2026-04-12,14:00,15:30,H302,CIA1
+Thermodynamics,ME,2026-04-13,10:00,11:30,H401,CIA1
+Fluid Mechanics,ME,2026-04-14,10:00,11:30,H401,CIA1
+Power Systems,EEE,2026-04-13,14:00,15:30,H501,CIA1
+Control Systems,EEE,2026-04-14,14:00,15:30,H501,CIA1
+Data Structures,CS,2026-04-25,10:00,11:30,H101,CIA2
+Algorithms,CS,2026-04-26,10:00,11:30,H101,CIA2
+Operating Systems,CS,2026-04-28,10:00,11:30,H102,CIA2
+Database Systems,IT,2026-04-26,14:00,15:30,H201,CIA2
+Computer Networks,IT,2026-04-24,14:00,15:30,H201,CIA2
+Web Development,IT,2026-04-28,14:00,15:30,H202,CIA2
+Digital Electronics,ECE,2026-04-26,10:00,11:30,H301,CIA2
+Signal Processing,ECE,2026-04-28,10:00,11:30,H301,CIA2
+VLSI Design,ECE,2026-04-27,14:00,15:30,H302,CIA2
+Thermodynamics,ME,2026-04-27,10:00,11:30,H401,CIA2
+Fluid Mechanics,ME,2026-04-29,10:00,11:30,H401,CIA2
+Power Systems,EEE,2026-04-25,14:00,15:30,H501,CIA2
+Control Systems,EEE,2026-04-27,10:00,11:30,H501,CIA2
+CS Lab (Data Structures),CS,2026-04-29,09:00,12:00,CS Lab 1,Lab
+CS Lab (Algorithms),CS,2026-04-30,09:00,12:00,CS Lab 1,Lab
+IT Lab (Web Development),IT,2026-04-29,14:00,17:00,IT Lab 2,Lab
+IT Lab (Networks),IT,2026-04-30,14:00,17:00,IT Lab 2,Lab
+ECE Lab (Electronics),ECE,2026-04-30,09:00,12:00,ECE Lab 1,Lab
+ECE Lab (VLSI),ECE,2026-05-01,09:00,12:00,ECE Lab 1,Lab
+ME Lab (Fluid Mechanics),ME,2026-04-30,14:00,17:00,ME Lab,Lab
+EEE Lab (Control Systems),EEE,2026-04-30,10:00,13:00,EEE Lab,Lab
+Data Structures,CS,2026-05-01,10:00,13:00,H101,Semester
+Algorithms,CS,2026-05-03,10:00,13:00,H101,Semester
+Operating Systems,CS,2026-05-05,14:00,17:00,H102,Semester
+Database Systems,IT,2026-05-02,10:00,13:00,H201,Semester
+Computer Networks,IT,2026-05-04,10:00,13:00,H201,Semester
+Web Development,IT,2026-05-06,14:00,17:00,H202,Semester
+Digital Electronics,ECE,2026-05-01,14:00,17:00,H301,Semester
+Signal Processing,ECE,2026-05-03,14:00,17:00,H301,Semester
+VLSI Design,ECE,2026-05-05,10:00,13:00,H302,Semester
+Thermodynamics,ME,2026-05-02,14:00,17:00,H401,Semester
+Fluid Mechanics,ME,2026-05-04,14:00,17:00,H401,Semester
+Machine Design,ME,2026-05-06,10:00,13:00,H402,Semester
+Power Systems,EEE,2026-05-01,10:00,13:00,H501,Semester
+Control Systems,EEE,2026-05-03,10:00,13:00,H501,Semester
+Data Structures,CS,2026-05-15,10:00,11:30,H101,CIA3
+Algorithms,CS,2026-05-16,10:00,11:30,H101,CIA3
+Operating Systems,CS,2026-05-17,10:00,11:30,H102,CIA3
+Database Systems,IT,2026-05-15,14:00,15:30,H201,CIA3
+Computer Networks,IT,2026-05-16,14:00,15:30,H201,CIA3
+Web Development,IT,2026-05-17,14:00,15:30,H202,CIA3
+Digital Electronics,ECE,2026-05-15,10:00,11:30,H301,CIA3
+Signal Processing,ECE,2026-05-16,10:00,11:30,H301,CIA3
+VLSI Design,ECE,2026-05-17,14:00,15:30,H302,CIA3
+Thermodynamics,ME,2026-05-18,10:00,11:30,H401,CIA3
+Fluid Mechanics,ME,2026-05-19,10:00,11:30,H401,CIA3
+Power Systems,EEE,2026-05-18,14:00,15:30,H501,CIA3
+Control Systems,EEE,2026-05-19,14:00,15:30,H501,CIA3
