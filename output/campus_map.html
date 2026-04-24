@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_2c82264d8212ce2af7cf2c0c4c210005 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_2c82264d8212ce2af7cf2c0c4c210005" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_2c82264d8212ce2af7cf2c0c4c210005 = L.map(
+                "map_2c82264d8212ce2af7cf2c0c4c210005",
+                {
+                    center: [12.9716, 77.59431],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 17,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_54ffb83330902b36c44944aa5dbf6cc0 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_54ffb83330902b36c44944aa5dbf6cc0.addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_ed87bd7cff65cfe6a05503901c86d185 = L.marker(
+                [12.9716, 77.5946],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_87b8371139dee1773e304e8ffffdcbc3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_add42ab7b5cd3ec73c3e55710726f78a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7416978180d04a54ab16ae75d8cfd138 = $(`<div id="html_7416978180d04a54ab16ae75d8cfd138" style="width: 100.0%; height: 100.0%;">         <b>TechFest Hackathon</b><br>         Date: 2026-04-25<br>         Time: 09:00:00 - 18:00:00<br>         Location: Main Auditorium<br>         Students Reached: 500<br>         Cost: INR 50000         </div>`)[0];
+                popup_add42ab7b5cd3ec73c3e55710726f78a.setContent(html_7416978180d04a54ab16ae75d8cfd138);
+            
+        
+
+        marker_ed87bd7cff65cfe6a05503901c86d185.bindPopup(popup_add42ab7b5cd3ec73c3e55710726f78a)
+        ;
+
+        
+    
+    
+            marker_ed87bd7cff65cfe6a05503901c86d185.bindTooltip(
+                `<div>
+                     TechFest Hackathon
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ed87bd7cff65cfe6a05503901c86d185.setIcon(icon_87b8371139dee1773e304e8ffffdcbc3);
+            
+    
+            var circle_marker_5131f35ca75d05a3013b66a47d5dec2f = L.circleMarker(
+                [12.9716, 77.5946],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 25.0, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_9cae8bedaff8f38509c0a448d418376e = L.marker(
+                [12.972, 77.595],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_4d4b1512214dfc7657c2048d99d9049a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a3725fb544d4b15f0a8b4163c56d064a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_48a6c6ca0c41912f53bbd3a92f317c46 = $(`<div id="html_48a6c6ca0c41912f53bbd3a92f317c46" style="width: 100.0%; height: 100.0%;">         <b>AI Workshop</b><br>         Date: 2026-04-25<br>         Time: 10:00:00 - 13:00:00<br>         Location: Lab Block A<br>         Students Reached: 80<br>         Cost: INR 15000         </div>`)[0];
+                popup_a3725fb544d4b15f0a8b4163c56d064a.setContent(html_48a6c6ca0c41912f53bbd3a92f317c46);
+            
+        
+
+        marker_9cae8bedaff8f38509c0a448d418376e.bindPopup(popup_a3725fb544d4b15f0a8b4163c56d064a)
+        ;
+
+        
+    
+    
+            marker_9cae8bedaff8f38509c0a448d418376e.bindTooltip(
+                `<div>
+                     AI Workshop
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9cae8bedaff8f38509c0a448d418376e.setIcon(icon_4d4b1512214dfc7657c2048d99d9049a);
+            
+    
+            var circle_marker_500b000a433171b3b12f5c0e7dcb8062 = L.circleMarker(
+                [12.972, 77.595],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4.0, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_1d86c7a61300521fbee8900cf012f8f9 = L.marker(
+                [12.971, 77.594],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_320629f5a6bce9197f8efd9ad94f2efc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a419309bc85375e5280aa85b4ce22fa3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5464cdd800267554eb817e2cc2f30012 = $(`<div id="html_5464cdd800267554eb817e2cc2f30012" style="width: 100.0%; height: 100.0%;">         <b>Robotics Expo</b><br>         Date: 2026-04-26<br>         Time: 11:00:00 - 16:00:00<br>         Location: ECE Lab<br>         Students Reached: 200<br>         Cost: INR 25000         </div>`)[0];
+                popup_a419309bc85375e5280aa85b4ce22fa3.setContent(html_5464cdd800267554eb817e2cc2f30012);
+            
+        
+
+        marker_1d86c7a61300521fbee8900cf012f8f9.bindPopup(popup_a419309bc85375e5280aa85b4ce22fa3)
+        ;
+
+        
+    
+    
+            marker_1d86c7a61300521fbee8900cf012f8f9.bindTooltip(
+                `<div>
+                     Robotics Expo
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1d86c7a61300521fbee8900cf012f8f9.setIcon(icon_320629f5a6bce9197f8efd9ad94f2efc);
+            
+    
+            var circle_marker_a905a6c446790dfb826b4ee8e7c12429 = L.circleMarker(
+                [12.971, 77.594],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.0, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_81973a0960f8ae2f0a0fa1a726d42ddd = L.marker(
+                [12.9725, 77.5948],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_793959e47529558871a6960595f88025 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_72e98daa48abb747d46f5e66d79ff5bc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fdeb4817ea4e3855ced0221173006c8b = $(`<div id="html_fdeb4817ea4e3855ced0221173006c8b" style="width: 100.0%; height: 100.0%;">         <b>Cultural Night</b><br>         Date: 2026-04-27<br>         Time: 18:00:00 - 22:00:00<br>         Location: Open Grounds<br>         Students Reached: 800<br>         Cost: INR 40000         </div>`)[0];
+                popup_72e98daa48abb747d46f5e66d79ff5bc.setContent(html_fdeb4817ea4e3855ced0221173006c8b);
+            
+        
+
+        marker_81973a0960f8ae2f0a0fa1a726d42ddd.bindPopup(popup_72e98daa48abb747d46f5e66d79ff5bc)
+        ;
+
+        
+    
+    
+            marker_81973a0960f8ae2f0a0fa1a726d42ddd.bindTooltip(
+                `<div>
+                     Cultural Night
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_81973a0960f8ae2f0a0fa1a726d42ddd.setIcon(icon_793959e47529558871a6960595f88025);
+            
+    
+            var circle_marker_7bd5157c79e038393c52a2370c7a8b81 = L.circleMarker(
+                [12.9725, 77.5948],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 40.0, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_d769de9c5263d3cf5389c3804511d3e0 = L.marker(
+                [12.9718, 77.5944],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_449114062242643ccbf6cf5c91c980a4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e68dde6bc433f7bab57061b51765aef5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4b5b355c38ee6682fc07219f1eae998a = $(`<div id="html_4b5b355c38ee6682fc07219f1eae998a" style="width: 100.0%; height: 100.0%;">         <b>Career Fair</b><br>         Date: 2026-04-28<br>         Time: 09:00:00 - 17:00:00<br>         Location: Seminar Hall<br>         Students Reached: 400<br>         Cost: INR 30000         </div>`)[0];
+                popup_e68dde6bc433f7bab57061b51765aef5.setContent(html_4b5b355c38ee6682fc07219f1eae998a);
+            
+        
+
+        marker_d769de9c5263d3cf5389c3804511d3e0.bindPopup(popup_e68dde6bc433f7bab57061b51765aef5)
+        ;
+
+        
+    
+    
+            marker_d769de9c5263d3cf5389c3804511d3e0.bindTooltip(
+                `<div>
+                     Career Fair
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d769de9c5263d3cf5389c3804511d3e0.setIcon(icon_449114062242643ccbf6cf5c91c980a4);
+            
+    
+            var circle_marker_fa6f1a1ed63debab2c4c3c6dc6fd70ed = L.circleMarker(
+                [12.9718, 77.5944],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.0, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_46d93159f04a7d0dbdf458b18c89e789 = L.marker(
+                [12.9721, 77.5942],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_d14b1dfcbb7df960a069af7f61f1956c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6b77a7fd159d6c5d22c29d4bc4b14fe3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_692f2a52ea419fd809c7fba53d2e0041 = $(`<div id="html_692f2a52ea419fd809c7fba53d2e0041" style="width: 100.0%; height: 100.0%;">         <b>Coding Contest</b><br>         Date: 2026-04-25<br>         Time: 14:00:00 - 17:00:00<br>         Location: CS Lab 2<br>         Students Reached: 100<br>         Cost: INR 8000         </div>`)[0];
+                popup_6b77a7fd159d6c5d22c29d4bc4b14fe3.setContent(html_692f2a52ea419fd809c7fba53d2e0041);
+            
+        
+
+        marker_46d93159f04a7d0dbdf458b18c89e789.bindPopup(popup_6b77a7fd159d6c5d22c29d4bc4b14fe3)
+        ;
+
+        
+    
+    
+            marker_46d93159f04a7d0dbdf458b18c89e789.bindTooltip(
+                `<div>
+                     Coding Contest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_46d93159f04a7d0dbdf458b18c89e789.setIcon(icon_d14b1dfcbb7df960a069af7f61f1956c);
+            
+    
+            var circle_marker_8466ae1bb3e93a64252f9bd1ef93629e = L.circleMarker(
+                [12.9721, 77.5942],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5.0, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_bfac58cb6cc67282e1317dd66f293ac3 = L.marker(
+                [12.97, 77.593],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_aa39f580586d53320e06a934fbc34c67 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6a9d1421378d025852d5a53172d91b70 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_42448ee223de4a167141fd51536f5f0d = $(`<div id="html_42448ee223de4a167141fd51536f5f0d" style="width: 100.0%; height: 100.0%;">         <b>Industrial Visit</b><br>         Date: 2026-04-29<br>         Time: 08:00:00 - 18:00:00<br>         Location: Offsite<br>         Students Reached: 60<br>         Cost: INR 35000         </div>`)[0];
+                popup_6a9d1421378d025852d5a53172d91b70.setContent(html_42448ee223de4a167141fd51536f5f0d);
+            
+        
+
+        marker_bfac58cb6cc67282e1317dd66f293ac3.bindPopup(popup_6a9d1421378d025852d5a53172d91b70)
+        ;
+
+        
+    
+    
+            marker_bfac58cb6cc67282e1317dd66f293ac3.bindTooltip(
+                `<div>
+                     Industrial Visit
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bfac58cb6cc67282e1317dd66f293ac3.setIcon(icon_aa39f580586d53320e06a934fbc34c67);
+            
+    
+            var circle_marker_fddd8a1ecee6df6404585f96ff593189 = L.circleMarker(
+                [12.97, 77.593],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3.0, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_ce93728c0ebe87b4dd36ee90fa1c9611 = L.marker(
+                [12.9719, 77.5947],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_308a4890b70a29cfab1c4365bb57cb14 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8075ea6ef52e96fad91abaa46b1f8c25 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ff23f3c0870bbae4efb1dc3bbcf272a5 = $(`<div id="html_ff23f3c0870bbae4efb1dc3bbcf272a5" style="width: 100.0%; height: 100.0%;">         <b>Paper Presentation</b><br>         Date: 2026-04-26<br>         Time: 10:00:00 - 14:00:00<br>         Location: Conference Hall<br>         Students Reached: 150<br>         Cost: INR 12000         </div>`)[0];
+                popup_8075ea6ef52e96fad91abaa46b1f8c25.setContent(html_ff23f3c0870bbae4efb1dc3bbcf272a5);
+            
+        
+
+        marker_ce93728c0ebe87b4dd36ee90fa1c9611.bindPopup(popup_8075ea6ef52e96fad91abaa46b1f8c25)
+        ;
+
+        
+    
+    
+            marker_ce93728c0ebe87b4dd36ee90fa1c9611.bindTooltip(
+                `<div>
+                     Paper Presentation
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ce93728c0ebe87b4dd36ee90fa1c9611.setIcon(icon_308a4890b70a29cfab1c4365bb57cb14);
+            
+    
+            var circle_marker_f01fc6e141af59eb1faccc3e3f0dd92a = L.circleMarker(
+                [12.9719, 77.5947],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.5, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_d98163b386f57fabedd7aa830bc5d38b = L.marker(
+                [12.9716, 77.5946],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_ff8db3862e4997fb43ff2992a6ead2c0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_05f1d4ab3ec8f924e6d896be0ca8adf6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_feff8444d86102dfdb48d754a066fcd0 = $(`<div id="html_feff8444d86102dfdb48d754a066fcd0" style="width: 100.0%; height: 100.0%;">         <b>Startup Pitch</b><br>         Date: 2026-04-27<br>         Time: 14:00:00 - 18:00:00<br>         Location: Auditorium<br>         Students Reached: 250<br>         Cost: INR 20000         </div>`)[0];
+                popup_05f1d4ab3ec8f924e6d896be0ca8adf6.setContent(html_feff8444d86102dfdb48d754a066fcd0);
+            
+        
+
+        marker_d98163b386f57fabedd7aa830bc5d38b.bindPopup(popup_05f1d4ab3ec8f924e6d896be0ca8adf6)
+        ;
+
+        
+    
+    
+            marker_d98163b386f57fabedd7aa830bc5d38b.bindTooltip(
+                `<div>
+                     Startup Pitch
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d98163b386f57fabedd7aa830bc5d38b.setIcon(icon_ff8db3862e4997fb43ff2992a6ead2c0);
+            
+    
+            var circle_marker_1706ace78f46e0f95d9220c3d601b87d = L.circleMarker(
+                [12.9716, 77.5946],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.5, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var marker_c620fa2c326197a4d308e5df6a8686c1 = L.marker(
+                [12.9715, 77.5938],
+                {
+}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+    
+            var icon_c24720de3b36ff525cfaf10a6d81fe90 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_01e418883fec1b2c7a17b6704addf5b2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eac31a06e1188e70dba9553cc84b5044 = $(`<div id="html_eac31a06e1188e70dba9553cc84b5044" style="width: 100.0%; height: 100.0%;">         <b>Circuit Design Contest</b><br>         Date: 2026-04-28<br>         Time: 10:00:00 - 15:00:00<br>         Location: EEE Lab<br>         Students Reached: 90<br>         Cost: INR 10000         </div>`)[0];
+                popup_01e418883fec1b2c7a17b6704addf5b2.setContent(html_eac31a06e1188e70dba9553cc84b5044);
+            
+        
+
+        marker_c620fa2c326197a4d308e5df6a8686c1.bindPopup(popup_01e418883fec1b2c7a17b6704addf5b2)
+        ;
+
+        
+    
+    
+            marker_c620fa2c326197a4d308e5df6a8686c1.bindTooltip(
+                `<div>
+                     Circuit Design Contest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c620fa2c326197a4d308e5df6a8686c1.setIcon(icon_c24720de3b36ff525cfaf10a6d81fe90);
+            
+    
+            var circle_marker_16cb19410c0842399a28f3ae3239d334 = L.circleMarker(
+                [12.9715, 77.5938],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4.5, "stroke": true, "weight": 3}
+            ).addTo(map_2c82264d8212ce2af7cf2c0c4c210005);
+        
+</script>
+</html>

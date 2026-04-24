@@ -1,0 +1,93 @@
+"""
+analysis.py
+-----------
+Financial & student analytics functions. Pure pandas/NumPy work -- no plotting
+(that's visualization.py's job) and no user interaction.
+
+Keeping analysis pure means every function here is unit-testable: pass in a
+DataFrame, get out a DataFrame or a number. Easy to verify in Q&A:
+>>> from src.analysis import department_utilization
+>>> department_utilization(finance_df)
+"""
+
+from typing import Dict, List
+
+import numpy as np
+import pandas as pd
+
+from .models import Student
+
+
+def department_utilization(finance_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Returns a DataFrame with one row per department showing:
+      TotalExpense | TotalBudget | Utilization% | Status
+    """
+    grouped = finance_df.groupby("Department").agg(
+        TotalExpense=("Expense", "sum"),
+        TotalBudget=("Budget",  "sum"),
+    ).reset_index()
+
+    # Vectorised division (NumPy under the hood) -- far faster than a Python loop.
+    grouped["Utilization%"] = (
+        grouped["TotalExpense"] / grouped["TotalBudget"] * 100
+    ).round(2)
+
+    # np.where is the vectorised "if/else". Takes condition, value-if-true,
+    # value-if-false. Runs in C -> blazing fast even on millions of rows.
+    grouped["Status"] = np.where(
+        grouped["TotalExpense"] > grouped["TotalBudget"],
+        "OVER BUDGET",
+        "OK",
+    )
+    return grouped
+
+
+def monthly_budget_trend(finance_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Totals expenses across all departments per month.
+    Useful for a line-chart showing spending over time.
+    """
+    monthly = (
+        finance_df.groupby("Month")["Expense"]
+        .sum()
+        .reset_index()
+        .sort_values("Month")
+    )
+    return monthly
+
+
+def fees_distribution(students: List[Student]) -> Dict[str, float]:
+    """
+    Returns {department -> total_fees_paid} for a pie chart.
+
+    Note we accept a list of Student objects (not a DataFrame). That's the
+    benefit of OOP: downstream code doesn't need to know the CSV schema.
+    """
+    distribution: Dict[str, float] = {}
+    for s in students:
+        # dict.get(key, default) avoids KeyError on first sighting of a dept.
+        distribution[s.department] = distribution.get(s.department, 0) + s.fees_paid
+    return distribution
+
+
+def fee_defaulters(students: List[Student]) -> List[Student]:
+    """Returns students who still owe fees. Filter + list comprehension."""
+    return [s for s in students if s.is_defaulter]
+
+
+def total_fees_collected(students: List[Student]) -> float:
+    """sum() with a generator expression -- no intermediate list built."""
+    return sum(s.fees_paid for s in students)
+
+
+def total_fees_pending(students: List[Student]) -> float:
+    return sum(s.fees_due for s in students)
+
+
+def department_student_count(students: List[Student]) -> Dict[str, int]:
+    """Count students per department -- showcases dict usage cleanly."""
+    counts: Dict[str, int] = {}
+    for s in students:
+        counts[s.department] = counts.get(s.department, 0) + 1
+    return counts
