@@ -1,2 +1,11 @@
 # Environment Files
 venv/
+__pycache__/
+*.pyc
+
+# Output (regenerated at runtime)
+output/
+
+# IDE
+.vscode/
+.idea/

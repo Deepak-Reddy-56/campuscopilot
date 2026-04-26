@@ -113,7 +113,6 @@ def load_events() -> List[Event]:
         ))
     return events
 
-
 def load_finance() -> pd.DataFrame:
     """
     Finance data stays as a DataFrame -- we'll groupby/aggregate heavily
